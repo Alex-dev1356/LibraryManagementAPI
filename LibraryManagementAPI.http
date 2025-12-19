@@ -1,6 +1,32 @@
-@LibraryManagementAPI_HostAddress = http://localhost:5205
+@rootApi = http://localhost:5205
 
-GET {{LibraryManagementAPI_HostAddress}}/weatherforecast/
+GET {{rootApi}}/api/Library/getallbooks
 Accept: application/json
 
 ###
+GET {{rootApi}}/api/Library/getbooksbyauthor/1
+Accept: application/json
+
+###
+POST {{rootApi}}/api/Library/addbook
+Content-type: application/json
+{
+    "id": 7,
+    "title": "The Notebook",
+    "publishedYear": 1995,
+    "authorID": 1
+}
+
+###
+PUT {{rootApi}}/api/Library/updatebook/7
+Content-type: application/json
+{
+  "id": 7,
+  "title": "UpdatedThe Notebook",
+  "publishedYear": 1999,
+  "authorID": 1
+}
+
+###
+DELETE {{rootApi}}/api/Library/deletebook/7
+
