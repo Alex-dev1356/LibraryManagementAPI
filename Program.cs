@@ -1,4 +1,7 @@
 
+using LibraryManagementAPI.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace LibraryManagementAPI
 {
     public class Program
@@ -12,6 +15,9 @@ namespace LibraryManagementAPI
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
+            builder.Services.AddDbContext<LibraryManagementAPIContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
