@@ -1,4 +1,5 @@
 ﻿using LibraryManagementAPI.Data;
+using LibraryManagementAPI.DTO;
 using LibraryManagementAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -36,15 +37,16 @@ namespace LibraryManagementAPI.Controllers
         };
 
         [HttpGet("getallbooks")]
-        public async Task<ActionResult<IEnumerable<Books>>> GetAllBooks()
+        public async Task<ActionResult<IEnumerable<BooksWithAuthor>>> GetAllBooks()
         {
             var booksWithAuthor = await _context.Books
                 .Include(b => b.Author)
-                .Select(b => new Books{ 
-                    ID = b.ID,
+                .Select(b => new BooksWithAuthor
+                {
                     Title = b.Title,
                     PublishedYear = b.PublishedYear,
-                    Author = b.Author
+                    AuthorName = b.Author.Name,
+                    AuthorBio = b.Author.Bio
                 })
                 .ToListAsync();
 
