@@ -1,5 +1,7 @@
-﻿using LibraryManagementAPI.Models;
+﻿using LibraryManagementAPI.Data;
+using LibraryManagementAPI.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Validation;
 using System.Diagnostics;
 using static System.Reflection.Metadata.BlobBuilder;
@@ -10,27 +12,43 @@ namespace LibraryManagementAPI.Controllers
     [ApiController]
     public class Library : Controller
     {
-            public static readonly List<Books> books = new List<Books>
-            {
-                new Books { ID = 1, Title = "The Great Gatsby", PublishedYear = 1925, AuthorID = 1 },
-                new Books { ID = 2, Title = "To Kill a Mockingbird", PublishedYear = 1960, AuthorID = 2 },
-                new Books { ID = 3, Title = "1984", PublishedYear = 1949, AuthorID = 3 },
-                new Books { ID = 4, Title = "Pride and Prejudice", PublishedYear = 1813, AuthorID = 1 },
-                new Books { ID = 5, Title = "The Catcher in the Rye", PublishedYear = 1951, AuthorID = 2 },
-                new Books { ID = 6, Title = "The Great Gatsby", PublishedYear = 1925, AuthorID = 3 }
-            };
+        //Dependency Injection
+        private readonly LibraryManagementAPIContext _context;
+        public Library(LibraryManagementAPIContext context)
+        {
+            _context = context;
+        }
+        public static readonly List<Books> books = new List<Books>
+        {
+            new Books { ID = 1, Title = "The Great Gatsby", PublishedYear = 1925, AuthorID = 1 },
+            new Books { ID = 2, Title = "To Kill a Mockingbird", PublishedYear = 1960, AuthorID = 2 },
+            new Books { ID = 3, Title = "1984", PublishedYear = 1949, AuthorID = 3 },
+            new Books { ID = 4, Title = "Pride and Prejudice", PublishedYear = 1813, AuthorID = 1 },
+            new Books { ID = 5, Title = "The Catcher in the Rye", PublishedYear = 1951, AuthorID = 2 },
+            new Books { ID = 6, Title = "The Great Gatsby", PublishedYear = 1925, AuthorID = 3 }
+        };
 
-            public static readonly List<Author> authors = new List<Author>
-            {
-                new Author { ID = 1, Name = "F. Scott Fitzgerald", Bio = "An American novelist and short story writer." },
-                new Author { ID = 2, Name = "Harper Lee", Bio = "An American novelist widely known for To Kill a Mockingbird." },
-                new Author { ID = 3, Name = "George Orwell", Bio = "An English novelist, essayist, journalist and critic." }
-            };
+        public static readonly List<Author> authors = new List<Author>
+        {
+            new Author { ID = 1, Name = "F. Scott Fitzgerald", Bio = "An American novelist and short story writer." },
+            new Author { ID = 2, Name = "Harper Lee", Bio = "An American novelist widely known for To Kill a Mockingbird." },
+            new Author { ID = 3, Name = "George Orwell", Bio = "An English novelist, essayist, journalist and critic." }
+        };
 
         [HttpGet("getallbooks")]
-        public ActionResult<Books> GetAllBooks()
+        public async Task<ActionResult<IEnumerable<Books>>> GetAllBooks()
         {
-            return Ok(books);
+            var booksWithAuthor = await _context.Books
+                .Include(b => b.Author)
+                .Select(b => new Books{ 
+                    ID = b.ID,
+                    Title = b.Title,
+                    PublishedYear = b.PublishedYear,
+                    Author = b.Author
+                })
+                .ToListAsync();
+
+            return Ok(booksWithAuthor);
         }
 
         [HttpGet("getbooksbyauthor/{id}")]
