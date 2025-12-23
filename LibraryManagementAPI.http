@@ -18,13 +18,13 @@ Content-type: application/json
 }
 
 ###
-PUT {{rootApi}}/api/Library/updatebook/7
+PUT {{rootApi}}/api/Library/updatebook/9
 Content-type: application/json
 {
-  "id": 7,
-  "title": "UpdatedThe Notebook",
-  "publishedYear": 1999,
-  "authorID": 1
+    "title": "Not Finished",
+    "publishedYear": 2000,
+    "authorName": "David Goggins",
+    "authorBio": "An American ultramarathon runner, ultra-distance cyclist, and former Navy SEAL."
 }
 
 ###

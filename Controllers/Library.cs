@@ -104,19 +104,27 @@ namespace LibraryManagementAPI.Controllers
         }
 
         [HttpPut("updatebook/{id}")]
-        public ActionResult<Books> UpdateBook(Books updateBook, int id)
+        public async Task<ActionResult<Books>> UpdateBook(BooksWithAuthor updateBook, int id)
         {
-            if (id == 0 || updateBook == null) return BadRequest();
+            if (id <= 0 ) return BadRequest("Empty or Invalid ID");
 
-            var getBookByID = books.Find(b => b.ID == id);
-            
-            if (getBookByID == null) return NotFound();
+            var bookToUpdate = await _context.Books
+                .Where(b => b.ID == id)
+                .FirstOrDefaultAsync();
 
-            getBookByID.Title = updateBook.Title;
-            getBookByID.PublishedYear = updateBook.PublishedYear;
-            getBookByID.AuthorID = updateBook.AuthorID;
+            if (bookToUpdate == null) return NotFound("Book not found");
 
-            return CreatedAtAction(nameof(GetBookById), new {id = updateBook.ID}, updateBook);
+            bookToUpdate.Title = updateBook.Title;
+            bookToUpdate.PublishedYear = updateBook.PublishedYear;
+            bookToUpdate.Author = new Author 
+                {
+                    Name = updateBook.AuthorName,
+                    Bio = updateBook.AuthorBio
+                };
+
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetBookById), new { id = bookToUpdate.ID }, updateBook);
         }
 
         [HttpDelete("deletebook/{id}")]
