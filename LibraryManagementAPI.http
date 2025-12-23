@@ -28,5 +28,5 @@ Content-type: application/json
 }
 
 ###
-DELETE {{rootApi}}/api/Library/deletebook/7
+DELETE {{rootApi}}/api/Library/deletebook/6
 

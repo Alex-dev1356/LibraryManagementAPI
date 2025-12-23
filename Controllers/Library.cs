@@ -3,10 +3,6 @@ using LibraryManagementAPI.DTO;
 using LibraryManagementAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Validation;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibraryManagementAPI.Controllers
 {
@@ -128,14 +124,23 @@ namespace LibraryManagementAPI.Controllers
         }
 
         [HttpDelete("deletebook/{id}")]
-        public IActionResult DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(int id)
         {
-            if (id == 0) return BadRequest();
+            if (id <= 0) return BadRequest("Empty or Invalid ID");
 
-            var bookToDelete = books.Find(b => b.ID == id);
-            if (bookToDelete == null) return NotFound();
+            //var bookToDelete = await _context.Books
+            //    .Where(b => b.ID == id)
+            //    .FirstOrDefaultAsync();
 
-            books.Remove(bookToDelete);
+            //We can also use the SingeOrDefaultAsync method here from the LINQ Query Function instead of FirstOrDefaultAsync()
+            var bookToDelete = await _context.Books
+                .SingleOrDefaultAsync(b => b.ID == id);
+
+            if (bookToDelete == null) return NotFound("Book not found");
+
+            _context.Books.Remove(bookToDelete);
+
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
