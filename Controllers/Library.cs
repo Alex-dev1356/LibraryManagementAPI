@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Validation;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibraryManagementAPI.Controllers
@@ -54,23 +55,29 @@ namespace LibraryManagementAPI.Controllers
         }
 
         [HttpGet("getbooksbyauthor/{id}")]
-        public ActionResult<Books> GetBookById(int id)
+        public async Task<ActionResult<IEnumerable<BooksWithAuthor>>> GetBookById(int id)
         {
-            if (id == 0) return NotFound();
+            if (id <= 0) 
+                return BadRequest("Invalid Author ID");
 
-            var author = authors.Find(a => a.ID == id);
+            var authorExists = await _context.Authors.AnyAsync(a => a.ID == id);
+            if (!authorExists) 
+                return NotFound("Author not found");
 
-            if (author == null) return NotFound();
+            var booksByAuthor = await _context.Books
+                .Include(b => b.Author)
+                .Where(b => b.AuthorID == id)
+                .Select(b => new BooksWithAuthor
+                {
+                    Title = b.Title,
+                    PublishedYear = b.PublishedYear,
+                    AuthorName = b.Author.Name,
+                    AuthorBio = b.Author.Bio
+                })
+                .ToListAsync();
 
-            var booksByAuthor = books.
-                Where(b => b.AuthorID == author.ID).
-                Select(b => new { 
-                b.Title,
-                b.PublishedYear,
-                AuthorName = author.Name,
-                AuthorBio = author.Bio
-                }).
-                ToList();
+            if (!booksByAuthor.Any())
+                return NotFound("No books found for this author");
 
             return Ok(booksByAuthor);
         }

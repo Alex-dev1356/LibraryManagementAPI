@@ -4,7 +4,7 @@ GET {{rootApi}}/api/Library/getallbooks
 Accept: application/json
 
 ###
-GET {{rootApi}}/api/Library/getbooksbyauthor/1
+GET {{rootApi}}/api/Library/getbooksbyauthor/3
 Accept: application/json
 
 ###
