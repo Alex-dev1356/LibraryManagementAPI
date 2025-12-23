@@ -83,11 +83,22 @@ namespace LibraryManagementAPI.Controllers
         }
 
         [HttpPost("addbook")]
-        public IActionResult CreateNewBook(Books newBook)
+        public IActionResult CreateNewBookWithAuthor(BooksWithAuthor newBook)
         {
-            if (newBook == null) return BadRequest();
+            if (newBook == null) return BadRequest("Empty Entry.");
 
-            books.Add(newBook);
+            _context.Books.Add(new Books
+            {
+                Title = newBook.Title,
+                PublishedYear = newBook.PublishedYear,
+                Author = new Author
+                {
+                    Name = newBook.AuthorName,
+                    Bio = newBook.AuthorBio
+                }
+            });
+
+            _context.SaveChanges();
 
             return NoContent();
         }

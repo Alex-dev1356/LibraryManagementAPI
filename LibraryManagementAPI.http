@@ -4,17 +4,17 @@ GET {{rootApi}}/api/Library/getallbooks
 Accept: application/json
 
 ###
-GET {{rootApi}}/api/Library/getbooksbyauthor/3
+GET {{rootApi}}/api/Library/getbooksbyauthor/4
 Accept: application/json
 
 ###
 POST {{rootApi}}/api/Library/addbook
 Content-type: application/json
 {
-    "id": 7,
-    "title": "The Notebook",
-    "publishedYear": 1995,
-    "authorID": 1
+    "title": "The Power of Positive Thinking",
+    "publishedYear": 1999,
+    "authorName": "Norman Vincent Peale",
+    "authorBio": "An American author and motivational speaker."
 }
 
 ###
