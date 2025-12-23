@@ -83,7 +83,7 @@ namespace LibraryManagementAPI.Controllers
         }
 
         [HttpPost("addbook")]
-        public IActionResult CreateNewBookWithAuthor(BooksWithAuthor newBook)
+        public async Task<IActionResult> CreateNewBookWithAuthor(BooksWithAuthor newBook)
         {
             if (newBook == null) return BadRequest("Empty Entry.");
 
@@ -98,7 +98,7 @@ namespace LibraryManagementAPI.Controllers
                 }
             });
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
