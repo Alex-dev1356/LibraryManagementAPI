@@ -1,5 +1,7 @@
 
 using LibraryManagementAPI.Data;
+using LibraryManagementAPI.Interfaces;
+using LibraryManagementAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagementAPI
@@ -18,6 +20,9 @@ namespace LibraryManagementAPI
 
             builder.Services.AddDbContext<LibraryManagementAPIContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            //Registering LibraryManagementServices
+            builder.Services.AddScoped<ILibraryService, LibraryService>();
 
             var app = builder.Build();
 
