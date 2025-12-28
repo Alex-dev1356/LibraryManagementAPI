@@ -2,6 +2,8 @@
 using LibraryManagementAPI.DTO;
 using LibraryManagementAPI.Interfaces;
 using LibraryManagementAPI.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagementAPI.Services
 {
@@ -12,29 +14,81 @@ namespace LibraryManagementAPI.Services
         {
             _context = context;
         }
-        public Task<Books> AddBookAsync(BooksWithAuthor newBook)
+
+        public async Task<IEnumerable<BooksWithAuthor>> GetAllBooksAsync()
         {
-            throw new NotImplementedException();
+            var booksWithAuthor = await _context.Books
+                 .Include(b => b.Author)
+                 .Select(b => new BooksWithAuthor
+                 { 
+                    Title = b.Title,
+                    PublishedYear = b.PublishedYear,
+                    AuthorName = b.Author.Name,
+                    AuthorBio = b.Author.Bio
+                 })
+                 .ToListAsync();
+            return booksWithAuthor;
         }
 
-        public Task<bool> DeleteBookAsync(int id)
+        public async Task<IEnumerable<BooksWithAuthor>> GetBooksByAuthorAsync(int authorId)
         {
-            throw new NotImplementedException();
+            var authorExists = await _context.Authors.AnyAsync(a => a.ID == authorId);
+            if (!authorExists)
+                return Enumerable.Empty<BooksWithAuthor>();
+
+            var booksByAuthor = await _context.Books
+                .Where(b => b.AuthorID == authorId)
+                .Select(b => new BooksWithAuthor()
+                {
+                    Title = b.Title,
+                    PublishedYear = b.PublishedYear,
+                    AuthorName = b.Author.Name,
+                    AuthorBio = b.Author.Bio
+                })
+                .ToListAsync();
+
+            return booksByAuthor;
+        }
+        public async Task<Books> AddBookAsync(BooksWithAuthor newBook)
+        {
+            var book = new Books()
+            {
+                Title = newBook.Title,
+                PublishedYear = newBook.PublishedYear,
+                Author = new Author()
+                {
+                    Name = newBook.AuthorName,
+                    Bio = newBook.AuthorBio
+                }
+            };
+
+            _context.Books.Add(book);
+            await _context.SaveChangesAsync();
+            return book;
         }
 
-        public Task<IEnumerable<BooksWithAuthor>> GetAllBooksAsync()
+        public async Task<Books> UpdateBookAsync(int id, BooksWithAuthor newBook)
         {
-            throw new NotImplementedException();
+            var book = await _context.Books.FirstOrDefaultAsync(b => b.ID == id);
+            if (book == null) return null;
+
+            book.Title = newBook.Title;
+            book.PublishedYear = newBook.PublishedYear;
+            book.Author.Name = newBook.AuthorName;
+            book.Author.Bio = newBook.AuthorBio;
+
+            await _context.SaveChangesAsync();
+            return book;
+        }
+        public async Task<bool> DeleteBookAsync(int id)
+        {
+            var book = await _context.Books.FirstOrDefaultAsync(b => b.ID == id);
+            if (book == null) return false;
+
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Task<IEnumerable<BooksWithAuthor>> GetBooksByAuthorAsync(int authorId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Books> UpdateBookAsync(int id, BooksWithAuthor newBook)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
