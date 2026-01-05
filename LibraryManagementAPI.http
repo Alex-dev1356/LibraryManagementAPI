@@ -4,7 +4,15 @@ GET {{rootApi}}/api/Library/getallbooks
 Accept: application/json
 
 ###
+GET {{rootApi}}/api/LibraryManagementService/getallbooks
+Accept: application/json
+
+###
 GET {{rootApi}}/api/Library/getbooksbyauthor/4
+Accept: application/json
+
+###
+GET {{rootApi}}/api/LibraryManagementService/getbooksbyauthor/4
 Accept: application/json
 
 ###
@@ -18,6 +26,16 @@ Content-type: application/json
 }
 
 ###
+POST {{rootApi}}/api/LibraryManagementService/addbook
+Content-type: application/json
+{
+    "title": "How to win Friends and Influence others",
+    "publishedYear": 2000,
+    "authorName": "Dale Carnegie",
+    "authorBio": "An American author and lecturer."
+}
+
+###
 PUT {{rootApi}}/api/Library/updatebook/9
 Content-type: application/json
 {
@@ -28,5 +46,18 @@ Content-type: application/json
 }
 
 ###
+PUT {{rootApi}}/api/LibraryManagementService/updatebook/4
+Content-type: application/json
+{
+    "title": "Updated Pride and Prejudice",
+    "publishedYear": 2005,
+    "authorName": "Updated F. Scott Fitzgerald",
+    "authorBio": "Updated An American novelist and short story writer."
+}
+
+###
 DELETE {{rootApi}}/api/Library/deletebook/6
+
+###
+DELETE {{rootApi}}/api/LibraryManagementService/deletebook/4
 
