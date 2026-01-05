@@ -74,8 +74,11 @@ namespace LibraryManagementAPI.Services
 
             book.Title = newBook.Title;
             book.PublishedYear = newBook.PublishedYear;
-            book.Author.Name = newBook.AuthorName;
-            book.Author.Bio = newBook.AuthorBio;
+            book.Author = new Author
+            {
+                Name = newBook.AuthorName,
+                Bio = newBook.AuthorBio
+            };
 
             await _context.SaveChangesAsync();
             return book;
