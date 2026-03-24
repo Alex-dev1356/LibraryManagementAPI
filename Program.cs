@@ -13,6 +13,16 @@ namespace LibraryManagementAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            //Adding CORS policy to allow requests from any origin, method, and header
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngular",
+                    policy => policy.WithOrigins("http://localhost:4200")
+                                    .AllowAnyMethod()
+                                    .AllowAnyHeader()   
+                    );
+            });
+
             // Add services to the container.
 
             builder.Services.AddControllers()
@@ -41,6 +51,7 @@ namespace LibraryManagementAPI
 
             app.UseAuthorization();
 
+            app.UseCors("AllowAngular");
 
             app.MapControllers();
 
